@@ -1,4 +1,3 @@
-
 template <typename T>
 class LinkedList
 {
@@ -77,5 +76,179 @@ public:
     ~LinkedList()
     {
         Clear();
+    }
+
+    LinkedList &operator=(const LinkedList &other)
+    {
+        if (this != &other)
+        {
+            Clear();
+            Node *current = other.head;
+            while (current != nullptr)
+            {
+                Append(current->value);
+                current = current->next;
+            }
+        }
+        return *this;
+    }
+
+    T GetFirst() const
+    {
+        return head->value;
+    }
+
+    T GetLast() const
+    {
+        return tail->value;
+    }
+
+    T Get(size_t index) const
+    {
+        Node *current = head;
+        for (size_t i = 0; i < index; ++i)
+        {
+            current = current->next;
+        }
+
+        return current->value;
+    }
+
+    T &operator[](size_t index)
+    {
+        Node *current = head;
+        for (size_t i = 0; i < index; ++i)
+        {
+            current = current->next;
+        }
+        return current->value;
+    }
+
+    const T &operator[](size_t index) const
+    {
+        Node *current = head;
+        for (size_t i = 0; i < index; ++i)
+        {
+            current = current->next;
+        }
+        return current->value;
+    }
+
+    size_t GetLength() const
+    {
+        size_t count = 0;
+        Node *current = head;
+        while (current != nullptr)
+        {
+            ++count;
+            current = current->next;
+        }
+        return count;
+    }
+
+    void Append(const T &item)
+    {
+        Node *newNode = new Node{item};
+        if (tail == nullptr)
+        {
+            head = tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    void Prepend(const T &item)
+    {
+        Node *newNode = new Node{item};
+        if (head == nullptr)
+        {
+            head = tail = newNode;
+        }
+        else
+        {
+            newNode->next = head;
+            head = newNode;
+        }
+    }
+
+    void InsertAt(const T &item, size_t index)
+    {
+        size_t len = GetLength();
+
+        if (index == 0)
+        {
+            Prepend(item);
+            return;
+        }
+
+        Node *current = head;
+        for (size_t i = 0; i < index - 1; ++i)
+        {
+            current = current->next;
+        }
+
+        Node *newNode = new Node{item};
+        newNode->next = current->next;
+        current->next = newNode;
+
+        if (newNode->next == nullptr)
+        {
+            tail = newNode;
+        }
+    }
+
+    LinkedList *GetSubList(size_t startIndex, size_t endIndex) const
+    {
+        size_t len = GetLength();
+
+        LinkedList *result = new LinkedList();
+        Node *current = head;
+        for (size_t i = 0; i <= endIndex; ++i)
+        {
+            if (i >= startIndex)
+            {
+                result->Append(current->value);
+            }
+            current = current->next;
+        }
+        return result;
+    }
+
+    LinkedList *Concat(const LinkedList *other) const
+    {
+        if (other == nullptr)
+            return new LinkedList(*this);
+
+        LinkedList *result = new LinkedList(*this);
+        Node *current = other->head;
+        while (current != nullptr)
+        {
+            result->Append(current->value);
+            current = current->next;
+        }
+        return result;
+    }
+
+    Iterator begin()
+    {
+        return Iterator(head);
+    }
+
+    Iterator end()
+    {
+        return Iterator(nullptr);
+    }
+
+    const Iterator begin() const
+    {
+        return Iterator(head);
+    }
+
+    const Iterator end() const
+    {
+        return Iterator(nullptr);
     }
 };
